@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            class Klasemen {
+                constructor(klubList) {
+                    this.klubList = klubList;
+                    this.poin = {};
+                    this.pertandingan = {};
+                    this.inisialisasiPoin();
+                }
+
+                inisialisasiPoin() {
+                    this.klubList.forEach((klub) => {
+                        this.poin[klub] = 0;
+                        this.pertandingan[klub] = 0;
+                    });
+                }
+
+                catatPermainan(klubKandang, klubTandang, skor) {
+                    const [golKandang, golTandang] = skor
+                        .split(":")
+                        .map(Number);
+
+                    if (golKandang > golTandang) {
+                        this.poin[klubKandang] += 3;
+                    } else if (golKandang < golTandang) {
+                        this.poin[klubTandang] += 3;
+                    } else {
+                        this.poin[klubKandang] += 1;
+                        this.poin[klubTandang] += 1;
+                    }
+
+                    this.pertandingan[klubKandang]++;
+                    this.pertandingan[klubTandang]++;
+                }
+
+                cetakKlasemen() {
+                    const sortedKlasemen = Object.entries(this.poin).sort(
+                        (a, b) =>
+                            b[1] - a[1] ||
+                            this.pertandingan[a[0]] - this.pertandingan[b[0]]
+                    );
+
+                    const result = {};
+                    sortedKlasemen.forEach(([klub, poin]) => {
+                        result[klub] = poin;
+                    });
+
+                    return result;
+                }
+
+                ambilPeringkat(nomorPeringkat) {
+                    const sortedKlasemen = Object.entries(this.poin).sort(
+                        (a, b) =>
+                            b[1] - a[1] ||
+                            this.pertandingan[a[0]] - this.pertandingan[b[0]]
+                    );
+
+                    return sortedKlasemen;
+                }
+            }
+
+            // Contoh penggunaan
+            const klasemen = new Klasemen(["Liverpool", "Chelsea", "Arsenal"]);
+
+            klasemen.catatPermainan("Arsenal", "Liverpool", "2:1");
+            klasemen.catatPermainan("Arsenal", "Chelsea", "1:1");
+            klasemen.catatPermainan("Chelsea", "Arsenal", "0:3");
+            klasemen.catatPermainan("Liverpool", "Arsenal", "3:2");
+            klasemen.catatPermainan("Liverpool", "Chelsea", "0:0");
+            klasemen.catatPermainan("Liverpool", "Arsenal", "2:3");
+
+            console.log(klasemen.cetakKlasemen());
+            console.log(klasemen.ambilPeringkat(2));
+        </script>
+    </body>
+</html>
